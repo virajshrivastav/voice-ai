@@ -1,0 +1,195 @@
+# Approved answer bank — Marathi
+#
+# WHAT THIS IS
+# The only things the agent may say back when a voter asks a question. The LLM never
+# writes an answer; it only picks an id from this file, or returns NONE. Everything
+# here is pre-rendered in the speaker's cloned voice at startup, so a matched answer
+# plays from cache in single-digit milliseconds.
+#
+# WRITING RULES (docs/02_COMPLIANCE.md §1.6 — enforced by tests, not just convention)
+#   1. No promises. Never "मी करून देईन" / "होईल" about a specific outcome.
+#   2. No dates or deadlines. Never "आठ दिवसांत", "या महिन्यात".
+#   3. No money figures, no scheme eligibility rulings, no policy positions.
+#   4. No claims about other parties or people.
+#   5. Every answer routes to the office. The office acts; the call only records.
+#   6. Two sentences maximum. This is a phone call on a bad line.
+#
+# APPROVAL GATE
+# answer_bank.py refuses to serve any entry unless approval.status == "approved".
+# The MLA (or an authorised person in his office) signs off on this exact text, and
+# their name and the date go in the approval block below. Until then this file is a
+# draft written by Claude and is usable only in demo/dev mode.
+
+lang: mr-IN
+version: 0
+approval:
+  status: draft            # draft | approved
+  approved_by: null
+  approved_at: null
+  approved_text_sha256: null   # filled by tools/approve_bank.py; changes invalidate approval
+
+office_contact_placeholder: "[कार्यालय क्रमांक]"
+
+entries:
+  # ---------------------------------------------------------------- identity / meta
+  - id: is_this_really_you
+    intent: "Voter asks whether this is really the MLA, a real person, a recording, or a robot."
+    triggers: ["खरंच तुम्ही", "खरे तुम्ही", "रेकॉर्डिंग", "रोबोट", "मशीन", "कोण बोलतंय", "खोटं"]
+    text: "हा माझा खरा आवाज आहे, पण तो AI ने तयार केलेला आहे — मी स्वतः आत्ता फोनवर नाही. तुम्ही जे सांगाल ते जसंच्या तसं माझ्या कार्यालयात नोंदवलं जातं."
+    tags: [disclosure, mandatory]
+
+  - id: where_did_you_get_my_number
+    intent: "Voter asks where the number came from, or objects to being called."
+    triggers: ["नंबर कुठून", "कुठून मिळाला", "कोणी दिला", "माझा नंबर"]
+    text: "तुमचा नंबर मतदारसंघातील उपलब्ध यादीतून घेतला आहे. तुम्हाला असे कॉल नको असतील तर आत्ताच सांगा, मी तुमचा नंबर कायमचा काढून टाकतो."
+    tags: [dpdp, mandatory]
+
+  - id: what_happens_to_my_answer
+    intent: "Voter asks what will be done with their answer or the recording."
+    triggers: ["काय करणार", "कुठे जाणार", "रेकॉर्ड कशाला", "माहिती कुठे"]
+    text: "तुमचं उत्तर माझ्या कार्यालयातल्या यादीत नोंद होतं आणि भागानुसार तक्रारींची यादी तयार होते. ती यादी माझ्याकडे थेट येते."
+    tags: [dpdp, mandatory]
+
+  - id: sceptical_will_anything_happen
+    intent: "Voter is sceptical — says nothing ever gets done, previous complaints ignored."
+    triggers: ["काही होत नाही", "नेहमीच सांगता", "आधीही सांगितलं", "फक्त बोलता"]
+    text: "तुमचा राग रास्त आहे, आणि मी तसं गृहीत धरत नाही की सगळं ठीक आहे. म्हणूनच ही नोंद होते आहे — नोंद झाली की ती यादीत राहते."
+    tags: [tone]
+
+  # ---------------------------------------------------------------- civic: water
+  - id: water_tanker
+    intent: "Voter asks about water tanker supply, frequency, or a tanker not arriving."
+    triggers: ["टँकर", "पाण्याचा टँकर", "पाणी येत नाही", "पाणी नाही"]
+    text: "पाण्याची अडचण मी नोंदवून घेतो आहे. तुमचा भाग आणि वॉर्ड कार्यालयात कळवला जाईल, आणि पाणीपुरवठा विभागाकडे ही तक्रार जाईल."
+    tags: [water]
+
+  - id: water_pipeline
+    intent: "Voter asks about a new pipeline, leaking pipeline, or dirty water."
+    triggers: ["पाइपलाइन", "नळ", "गढूळ", "घाण पाणी", "गळती"]
+    text: "नळ आणि पाइपलाइनची तक्रार नोंदवली. पाण्याची गुणवत्ता किंवा गळतीची तक्रार असेल तर ती वेगळी नोंद होते."
+    tags: [water]
+
+  # ---------------------------------------------------------------- civic: roads etc
+  - id: roads_bad
+    intent: "Voter complains about potholes, broken road, unpaved road, or road work."
+    triggers: ["खड्डे", "रस्ता खराब", "रस्ता नाही", "डांबरीकरण"]
+    text: "रस्त्याची तक्रार नोंदवून घेतो आहे. कोणता रस्ता किंवा वॉर्ड आहे ते नोंदवलं की ती यादी बांधकाम विभागाकडे जाते."
+    tags: [roads]
+
+  - id: streetlight
+    intent: "Voter complains about streetlights not working or absent."
+    triggers: ["पथदिवे", "लाईट लागत नाही", "अंधार", "दिवा"]
+    text: "पथदिव्यांची तक्रार नोंदवली. अंधारामुळे सुरक्षिततेचा प्रश्न असेल तर ते वेगळं नोंदवतो."
+    tags: [lights]
+
+  - id: drainage_garbage
+    intent: "Voter complains about drainage, sewage, garbage collection, or cleanliness."
+    triggers: ["गटार", "ड्रेनेज", "कचरा", "सफाई", "दुर्गंधी"]
+    text: "गटार आणि कचऱ्याची तक्रार नोंदवून घेतो आहे. ही तक्रार महानगरपालिकेच्या संबंधित विभागाकडे यादीसह जाते."
+    tags: [sanitation]
+
+  - id: electricity
+    intent: "Voter complains about power cuts, transformer, or electricity bills."
+    triggers: ["वीज", "लाईट जाते", "ट्रान्सफॉर्मर", "भारनियमन", "बिल"]
+    text: "वीजपुरवठ्याची तक्रार नोंदवली. महावितरणकडे पाठवण्यासाठी तुमचा भाग नोंदवून घेतो आहे."
+    tags: [power]
+
+  # ---------------------------------------------------------------- schemes
+  - id: ration_card
+    intent: "Voter has a problem with ration card, ration shop, or grain not received."
+    triggers: ["रेशन", "धान्य", "कार्ड", "दुकानदार"]
+    text: "रेशनची अडचण नोंदवून घेतो आहे. कार्डाचा प्रश्न आहे की दुकानातून धान्य मिळत नाही — दोन्ही वेगळ्या नोंदी होतात, त्यामुळे नेमकं सांगा."
+    tags: [scheme, ration]
+
+  - id: pension
+    intent: "Voter has a problem with old-age, widow, or disability pension."
+    triggers: ["पेन्शन", "निवृत्ती", "वृद्धापकाळ", "विधवा", "अपंग"]
+    text: "पेन्शनची अडचण नोंदवली. अर्ज केला आहे पण पैसे येत नाहीत, की अर्जच झालेला नाही — हे नोंदवून घेतो."
+    tags: [scheme, pension]
+
+  - id: ladki_bahin
+    intent: "Voter asks about the Ladki Bahin scheme — instalment not received, form, eligibility."
+    triggers: ["लाडकी बहीण", "लाडकी", "हप्ता", "बहीण योजना"]
+    text: "लाडकी बहीण योजनेची अडचण नोंदवून घेतो आहे. अर्जाचा प्रश्न आहे की हप्ता येत नाही, हे कार्यालयात नोंदवलं जाईल."
+    tags: [scheme, ladki_bahin]
+
+  - id: housing_gharkul
+    intent: "Voter asks about Gharkul / PMAY / housing scheme."
+    triggers: ["घरकुल", "आवास", "घर मंजूर", "पीएम आवास"]
+    text: "घरकुलाची अडचण नोंदवली. यादीत नाव आहे की नाही, आणि अर्ज कुठे अडला आहे — हे कार्यालय तपासेल."
+    tags: [scheme, housing]
+
+  - id: farm_issue
+    intent: "Voter raises crop loss, crop insurance, farm loan waiver, or MSP."
+    triggers: ["पीक", "शेती", "कर्जमाफी", "विमा", "नुकसान", "हमीभाव"]
+    text: "शेतीची अडचण नोंदवून घेतो आहे. नुकसानभरपाई, विमा किंवा कर्जाचा प्रश्न असेल तर तो कृषी विभागाकडे यादीसह पाठवला जातो."
+    tags: [scheme, farm]
+
+  # ---------------------------------------------------------------- services
+  - id: hospital_health
+    intent: "Voter raises hospital, clinic, doctor, ambulance, or medicine availability."
+    triggers: ["दवाखाना", "रुग्णालय", "डॉक्टर", "औषध", "रुग्णवाहिका"]
+    text: "आरोग्यसेवेची तक्रार नोंदवली. तातडीची वैद्यकीय मदत हवी असेल तर कृपया कार्यालयाला थेट फोन करा — [कार्यालय क्रमांक]."
+    tags: [health]
+
+  - id: school_education
+    intent: "Voter raises school, teacher, admission, or scholarship issues."
+    triggers: ["शाळा", "शिक्षक", "प्रवेश", "शिष्यवृत्ती", "कॉलेज"]
+    text: "शाळेची अडचण नोंदवून घेतो आहे. कोणती शाळा आणि नेमका प्रश्न काय, हे नोंदवलं की शिक्षण विभागाकडे जातं."
+    tags: [education]
+
+  - id: employment
+    intent: "Voter asks about jobs, unemployment, or employment schemes."
+    triggers: ["नोकरी", "रोजगार", "काम नाही", "बेरोजगार"]
+    text: "रोजगाराचा प्रश्न नोंदवून घेतो आहे. कार्यालयात रोजगार मेळावे आणि प्रशिक्षणाची माहिती ठेवली जाते — [कार्यालय क्रमांक] वर विचारता येईल."
+    tags: [employment]
+
+  # ---------------------------------------------------------------- personal asks
+  - id: want_to_meet
+    intent: "Voter asks to meet the MLA in person or asks when he will visit the area."
+    triggers: ["भेटायचं", "भेट", "कधी येणार", "याल का", "प्रत्यक्ष"]
+    text: "भेटीसाठी कार्यालयाशी संपर्क करा — [कार्यालय क्रमांक]. तुमची नोंद आधीच झाली आहे, त्यामुळे भेटीत विषय माहीत असेल."
+    tags: [meeting]
+
+  - id: personal_financial_help
+    intent: "Voter asks for money, a personal favour, a job placement, or direct financial help."
+    triggers: ["पैसे", "मदत करा", "नोकरी लावा", "काम लावा", "आर्थिक"]
+    text: "अशा वैयक्तिक विनंत्या फोनवर ठरवता येत नाहीत. कृपया कार्यालयात संपर्क करा — [कार्यालय क्रमांक] — तिथे नियमानुसार पाहिलं जाईल."
+    tags: [sensitive, no_promise]
+
+  - id: complaint_about_official
+    intent: "Voter complains about a specific government official, bribe, or corruption."
+    triggers: ["लाच", "पैसे मागतो", "अधिकारी", "भ्रष्टाचार", "टाळाटाळ"]
+    text: "ही गंभीर तक्रार आहे, ती वेगळी नोंदवून घेतो आहे. कृपया कार्यालयात लेखी तक्रार द्या — [कार्यालय क्रमांक]."
+    tags: [sensitive]
+
+  # ---------------------------------------------------------------- conversation control
+  - id: repeat_that
+    intent: "Voter asks the agent to repeat, speak slower, or says they did not understand."
+    triggers: ["पुन्हा", "परत सांगा", "समजलं नाही", "हळू"]
+    text: "नक्की, पुन्हा सांगतो."
+    tags: [control]
+
+  - id: call_me_later
+    intent: "Voter says they are busy and asks to be called at another time."
+    triggers: ["नंतर", "व्यस्त", "आत्ता नाही", "उद्या"]
+    text: "ठीक आहे, आत्ता वेळ घेत नाही. गरज वाटली तर कार्यालयाला फोन करा — [कार्यालय क्रमांक]. नमस्कार."
+    tags: [control, ends_call]
+
+  - id: wrong_area
+    intent: "Voter says they do not live in this constituency or the number is wrong."
+    triggers: ["इथे राहत नाही", "चुकीचा नंबर", "दुसऱ्या भागात", "बाहेरगावी"]
+    text: "माफ करा, चूक झाली. मी तुमचा नंबर यादीतून काढून टाकतो. वेळ दिल्याबद्दल धन्यवाद."
+    tags: [control, ends_call, optout]
+
+  - id: angry_abusive
+    intent: "Voter is angry, shouting, or abusive."
+    triggers: []
+    text: "तुमचं म्हणणं मी नोंदवून घेतो आहे. वेळ दिल्याबद्दल धन्यवाद. नमस्कार."
+    tags: [tone, ends_call]
+
+# Fallback when the classifier returns NONE or a low-confidence match.
+# This is a fixed turn, not an answer bank entry, and can never be skipped.
+fallback:
+  id: no_matched_answer
+  text: "हे मी नोंदवून घेतो आहे आणि माझ्या कार्यालयात पाठवतो. सविस्तर बोलायचं असेल तर कार्यालयाशी संपर्क करा — [कार्यालय क्रमांक]."

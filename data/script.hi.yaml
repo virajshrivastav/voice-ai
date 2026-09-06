@@ -1,0 +1,123 @@
+# Call script — Hindi (Stage 0/1 test language, Viraj's own consented voice)
+#
+# Source of truth for turn text: docs/03_CALL_SCRIPT.md.
+# Same rules as script.mr.yaml: fixed turns are never paraphrased at runtime.
+
+lang: hi-IN
+version: 0
+review:
+  status: draft
+  reviewed_by: null
+  reviewed_at: null
+
+placeholders:
+  speaker_name: "[नाम]"
+  constituency: "[क्षेत्र]"
+
+turns:
+  OPEN:
+    kind: fixed
+    disclosure: true
+    text: "नमस्ते, मैं [नाम] बोल रहा हूँ। यह मेरी आवाज़ की AI कॉपी है — यह कॉल मेरी अनुमति से एक कंप्यूटर प्रोग्राम द्वारा की जा रही है। आपकी बात मेरे कार्यालय तक सही-सही पहुँचे, इसलिए यह कॉल रिकॉर्ड हो रही है। अगर आप बात नहीं करना चाहते, तो बस 'नहीं' कहें, कॉल तुरंत बंद हो जाएगी। क्या मैं दो मिनट ले सकता हूँ?"
+
+  Q1:
+    kind: fixed
+    field: water
+    short: "पानी की सप्लाई कैसी है"
+    text: "आपके इलाके में पानी की सप्लाई कैसी है — रोज़ आती है, या दिक्कत होती है?"
+
+  Q2:
+    kind: fixed
+    field: roads
+    short: "सड़कें और स्ट्रीट लाइट कैसी हैं"
+    text: "आपके गाँव या वार्ड की सड़कों और स्ट्रीट लाइट की हालत कैसी है?"
+
+  Q3:
+    kind: fixed
+    field: scheme_issue
+    short: "किसी सरकारी योजना में दिक्कत हुई है क्या"
+    text: "क्या आपको या आपके परिवार को किसी सरकारी योजना का लाभ पाने में दिक्कत हुई है — राशन, पेंशन, लाडकी बहीण योजना, या आवास योजना?"
+
+  Q4:
+    kind: fixed
+    field: open_grievance_text
+    short: "और कुछ बताना चाहते हैं"
+    text: "कोई और समस्या जो आप मुझे सीधे बताना चाहें?"
+
+  CLOSE:
+    kind: fixed
+    text: "धन्यवाद। आपकी बात मेरे कार्यालय में नोट हो गई है। अगर आगे ऐसे कॉल नहीं चाहते तो बताइए, हम आपका नंबर हटा देंगे। नमस्ते।"
+
+  # DRAFTED HERE — no text was specified in docs/03_CALL_SCRIPT.md.
+  CLOSE_SHORT:
+    kind: fixed
+    drafted_here: true
+    text: "ठीक है, आप शायद व्यस्त हैं। समय देने के लिए धन्यवाद। नमस्ते।"
+
+  # DRAFTED HERE — the Hindi opt-out line was not given in docs/03_CALL_SCRIPT.md.
+  OPTOUT:
+    kind: fixed
+    drafted_here: true
+    text: "ठीक है, मैं आपका नंबर हटा देता हूँ। समय देने के लिए धन्यवाद। नमस्ते।"
+
+acknowledgements:
+  kind: fixed
+  variants:
+    - "समझ गया।"
+    - "नोट कर लिया।"
+    - "यह ज़रूरी बात है, धन्यवाद।"
+
+clarification:
+  kind: templated
+  template: "क्षमा करें, ठीक से सुनाई नहीं दिया — {short}?"
+
+# See the long note in script.mr.yaml. Same problem in Hindi: "पानी नहीं आता" is an
+# answer, not an opt-out, and a substring match on "नहीं" cannot tell them apart.
+optout:
+  phrases:
+    - "नहीं चाहिए"
+    - "मुझे नहीं"
+    - "बंद करो"
+    - "फ़ोन मत करो"
+    - "फोन मत करो"
+    - "कॉल मत करो"
+    - "दोबारा मत"
+    - "नंबर हटा दो"
+    - "बात नहीं करनी"
+    - "समय नहीं"
+    - "not interested"
+    - "stop calling"
+    - "do not call"
+    - "dont call"
+  standalone:
+    - "नहीं"
+    - "ना"
+    - "no"
+    - "stop"
+  fillers:
+    - "मुझे"
+    - "भाई"
+    - "please"
+    - "प्लीज"
+
+affirm:
+  phrases:
+    - "हाँ बोलिए"
+    - "ठीक है"
+    - "पूछिए"
+    - "बताइए"
+  standalone:
+    - "हाँ"
+    - "हां"
+    - "जी"
+    - "बोलिए"
+    - "yes"
+    - "ok"
+  fillers:
+    - "जी"
+    - "अच्छा"
+
+# See script.mr.yaml. Same purpose: asking vs answering.
+question:
+  words: ["क्या", "कब", "कहाँ", "कहां", "कौन", "कैसे", "कैसी", "कितना", "कितनी", "क्यों", "किसने"]
+  final_particles: ["क्या", "ना"]

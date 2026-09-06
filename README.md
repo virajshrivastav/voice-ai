@@ -1,28 +1,154 @@
 # voice-ai
 
-Cloned-voice, two-way constituent outreach calls for MLAs/MPs (Marathi/Hindi) — spec, evidence, compliance kit and staged build plan.
+Cloned-voice, two-way constituent outreach calls for MLAs/MPs (Marathi/Hindi) — spec,
+evidence, compliance kit, and a working offline build.
 
-**Status:** pre-build (2026-09-06). Nothing confirmed with any client; target is a ₹0 demo path first.
+**Status:** pre-build → **buildable** (2026-09-06). Nothing confirmed with any client.
+No voice samples and no API keys yet, so everything runs on mock providers and lights
+up when they arrive.
+
+## Run it now
+
+Nothing below needs a key, a GPU, a phone, or a voice sample.
+
+```bash
+uv venv && uv pip install --native-tls -e ".[dev]"
+```
+
+```bash
+.venv/Scripts/python -m stage1.dryrun --lang mr-IN --scenario asks_a_question
+```
+
+That walks a whole call: the real script, the real answer bank, the real guard, the
+real state machine, the real record writer. Only the microphone and speaker are fake.
+Other scenarios: `cooperative`, `optout`, `silent`, `noisy` (add `--wer 0.4` to
+simulate the ~19% word error rate Indic telephony ASR actually delivers).
+
+```bash
+.venv/Scripts/python -m campaign.simulate --voters 2000 --db out/campaign.db
+```
+
+Runs 2,000 calls through that same state machine and writes them to a campaign
+database — voters, calls, turns, answers, opt-outs.
+
+```bash
+.venv/Scripts/python -m insights.report --db out/campaign.db --campaign csn-central-2026q3
+```
+
+Produces `out/report/…html` — the constituency report, and the thing an MLA's office
+actually buys. Open it in a browser.
+
+```bash
+.venv/Scripts/python -m voiceai.costs
+```
+
+Per-minute and per-sweep cost model.
+
+```bash
+.venv/Scripts/python -m pytest -q
+```
+
+## Docs
 
 | Doc | What it is |
 |---|---|
-| [docs/00_CONTEXT.md](docs/00_CONTEXT.md) | Requirement, market evidence, vendor comparison, ₹5/min cost model, latency, architecture, legal map, staged plan, decisions |
-| [docs/01_EVIDENCE_CHECK.md](docs/01_EVIDENCE_CHECK.md) | 37 claims re-verified against primary sources; corrections applied |
+| [docs/00_CONTEXT.md](docs/00_CONTEXT.md) | Requirement, market evidence, vendor comparison, cost model, latency, architecture, legal map, staged plan, decisions |
+| [docs/01_EVIDENCE_CHECK.md](docs/01_EVIDENCE_CHECK.md) | 37 claims verified against primary sources |
 | [docs/02_COMPLIANCE.md](docs/02_COMPLIANCE.md) | TRAI / ECI / IT Rules / DPDP checklist, consent template, retention defaults |
-| [docs/03_CALL_SCRIPT.md](docs/03_CALL_SCRIPT.md) | Call script v0 — Marathi (production) + Hindi (test), state machine, answer schema |
-| [docs/04_BUILD_PLAN.md](docs/04_BUILD_PLAN.md) | Stage 0 bake-off → Stage 1 browser demo → Stage 2 real number → Stage 3 pilot; repo layout; DoD |
+| [docs/03_CALL_SCRIPT.md](docs/03_CALL_SCRIPT.md) | Call script v0, state machine, answer schema |
+| [docs/04_BUILD_PLAN.md](docs/04_BUILD_PLAN.md) | Stage 0 bake-off → Stage 1 browser demo → Stage 2 real number → Stage 3 pilot |
 | [docs/05_SOURCES.md](docs/05_SOURCES.md) | Every source URL |
+| **[docs/06_CORRECTIONS.md](docs/06_CORRECTIONS.md)** | **What changed after re-verification and after building it — read this second** |
+| [docs/07_HANDOFF.md](docs/07_HANDOFF.md) | Handoff back to the spec's author: what was built, what was wrong, six open questions |
 | [CLAUDE.md](CLAUDE.md) | Rules for Claude Code working in this repo |
-| [schema/answers.schema.json](schema/answers.schema.json) | Per-call structured output |
+
+## What's built
+
+```
+voiceai/
+  script.py         fixed turn text from data/script.<lang>.yaml
+  answer_bank.py    approved replies, with an approval + tamper gate
+  guard.py          SpeechGuard — the closed set of sentences the voice may utter
+  state_machine.py  the conversation, transport-free and testable without audio
+  classify.py       the only thing the LLM may do: return a label
+  prerender.py      synthesise the allowed set once per voice, then play from disk
+  runner.py         the call loop; the transport is a 3-method hole
+  session.py        the record schema/answers.schema.json describes
+  costs.py          per-minute and per-sweep model
+  audio.py          G.711 degradation — judge every voice at 8 kHz, never clean
+  tts/  stt/        swappable vendors behind one interface
+campaign/
+  phone.py          Indian number normalisation — one person, one key, always
+  db.py             SQLite now, Postgres-shaped DDL
+  ingest.py         voter CSV -> DB, with a rejects file that says why
+  optout.py         the opt-out ledger: global, append-only, no remove()
+  dnd.py            preference-registry gate; the stub refuses production
+  dialer.py         windows, blackouts, retries — the compliance rules, testable
+  simulate.py       N calls through the REAL state machine
+insights/report.py  the constituency report + grievance CSV
+stage0/  bakeoff · blindpack · report      the voice bake-off, end to end
+stage1/  dryrun                            a whole call, offline
+```
+
+### Why the report exists before the voice does
+
+An MLA who hears a good clone says *"nice, clever"*. An MLA who sees a ward-by-ward
+list of who complained about what, with a number to call back, asks *how much*.
+
+`docs/07_HANDOFF.md §5 Q3` makes the same point commercially: pricing per minute
+invites a comparison against the ₹0.50/call blasts they already buy, and we lose that
+comparison. Pricing on the grievance list does not. That list needs no voice clone and
+no API key, so it is built and shippable now.
+
+The report is one self-contained HTML file — no server, no CDN, no fonts to fetch. It
+opens on a phone and can be forwarded as an attachment, because the person who reads
+it runs an office, not a dev server. Everything generated by `campaign.simulate` is
+watermarked **SYNTHETIC DEMO DATA**; no real resident is described.
+
+### The design decision everything hangs off
+
+When a voter asks something back, the agent **never writes a reply**. It picks an id
+out of an answer file a human approved, and plays the pre-rendered audio for that id.
+The LLM's entire authority is *"return one of these ids, or NONE"*.
+
+`SpeechGuard` enforces that at the synthesis boundary. A hallucinated id, a bug in the
+state machine, or a prompt injection carried in a voter's own words all fail the same
+way: the guard refuses, and the call falls back to approved text. `guard.manifest()`
+emits the finite list of every sentence the voice can utter — which is also what makes
+an interactive script pre-certifiable by an MCMC.
+
+Three consequences fall out of the same decision: ~90% of the call plays from disk in
+single-digit milliseconds, TTS spend collapses toward zero, and the audio a voter hears
+is byte-identical to the audio that was approved.
 
 ## TL;DR
-1. Cloned political calls are a commodity in India (50M+ in 2024); the product is the two-way conversation + answer data.
-2. Use the Indian stack: Sarvam (beats ElevenLabs at 8 kHz; ElevenLabs can't clone Marathi), Smallest/Cartesia as hedges, Exotel/Plivo, Bolna or Pipecat.
-3. ₹5/min works only self-hosted (~₹2.5–3/min raw, ~₹2 with pre-rendered turns). Managed platforms are at/over ₹5.
-4. Target "recognisable + natural on a phone line", not "exact"; Marathwada dialect is not reproducible today.
-5. Indic telephony STT accuracy is the hidden risk.
-6. Non-negotiable: verbal AI disclosure, consented voices only, DLT sender + 140-series, DPDP notice, ECI labelling/MCMC in election periods.
-7. Four cheap stages; don't quote before Stage 2.
+
+1. Cloned political calls are a commodity in India (50M+ in 2024); the product is the
+   two-way conversation and the answer data.
+2. **Sarvam has no self-serve voice cloning** — its TTS API takes a fixed enum of
+   catalog voices. Stage 0 runs on **Smallest.ai** and **Gnani.ai Vachana** (both clone
+   Marathi), plus IndicF5 (MIT, free, needs a GPU). See `06_CORRECTIONS.md`.
+3. Sarvam is still the right **STT**: ~19% WER, tuned for 8 kHz telephony, `codemix`
+   mode for Marathi/Hindi/English switching.
+4. **NVIDIA Magpie TTS has no Marathi.** Hindi only. The latency lever here is
+   pre-rendering, not a faster model.
+5. Modelled cost is **₹0.89/min** with pre-rendering (₹1.2–1.5 realistically, with GST
+   and pulse rounding) against a ₹5 sell price. **Telephony is the biggest line, not
+   the AI.**
+6. Target "recognisable and natural on a phone line", not "exact". Marathwada dialect
+   is not reproducible by any vendor today.
+7. Non-negotiable: verbal AI disclosure, consented voices only, DLT sender + 140-series,
+   DPDP notice, ECI labelling and MCMC pre-certification in election periods.
 
 ## Next actions
-See `docs/04_BUILD_PLAN.md` → Stage 0. Needs: own-voice samples (Hindi + Marathi), Sarvam + Smallest (+ Cartesia) API keys in `.env`.
+
+Blocked on two things, both cheap:
+
+1. **A voice sample.** 3 min Hindi + 3 min Marathi, clean room, phone recorder, plus
+   30 s recorded through an actual phone call. Everything in `stage0/` is waiting on it.
+2. **A TTS key.** Smallest.ai (documented self-serve Marathi cloning) or Gnani.ai
+   Vachana (Indian, IndiaAI-Mission, on-prem available, access model unverified).
+   Either gives a real answer to the only question that matters: does the clone
+   survive a phone line.
+
+Then `docs/04_BUILD_PLAN.md` → Stage 0.

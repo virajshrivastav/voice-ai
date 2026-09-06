@@ -1,0 +1,170 @@
+# Approved answer bank — Hindi (Stage 0/1 test language)
+#
+# Mirror of answer_bank.mr.yaml with the same entry ids, so the state machine and the
+# guard can be exercised in Hindi with Viraj's own consented voice before any Marathi
+# clone exists. Same writing rules and same approval gate — see answer_bank.mr.yaml.
+
+lang: hi-IN
+version: 0
+approval:
+  status: draft
+  approved_by: null
+  approved_at: null
+  approved_text_sha256: null
+
+office_contact_placeholder: "[कार्यालय नंबर]"
+
+entries:
+  - id: is_this_really_you
+    intent: "Voter asks whether this is really the MLA, a real person, a recording, or a robot."
+    triggers: ["सच में आप", "रिकॉर्डिंग", "रोबोट", "मशीन", "कौन बोल रहा", "झूठ"]
+    text: "यह मेरी असली आवाज़ है, लेकिन इसे AI ने बनाया है — मैं खुद अभी फ़ोन पर नहीं हूँ। आप जो कहेंगे वह ज्यों का त्यों मेरे कार्यालय में दर्ज होता है।"
+    tags: [disclosure, mandatory]
+
+  - id: where_did_you_get_my_number
+    intent: "Voter asks where the number came from, or objects to being called."
+    triggers: ["नंबर कहाँ से", "किसने दिया", "मेरा नंबर"]
+    text: "आपका नंबर क्षेत्र की उपलब्ध सूची से लिया गया है। अगर आप ऐसे कॉल नहीं चाहते तो अभी बता दीजिए, मैं आपका नंबर हमेशा के लिए हटा देता हूँ।"
+    tags: [dpdp, mandatory]
+
+  - id: what_happens_to_my_answer
+    intent: "Voter asks what will be done with their answer or the recording."
+    triggers: ["क्या करेंगे", "कहाँ जाएगा", "रिकॉर्ड क्यों", "जानकारी कहाँ"]
+    text: "आपका जवाब मेरे कार्यालय की सूची में दर्ज होता है और इलाक़े के हिसाब से शिकायतों की सूची बनती है। वह सूची सीधे मेरे पास आती है।"
+    tags: [dpdp, mandatory]
+
+  - id: sceptical_will_anything_happen
+    intent: "Voter is sceptical — says nothing ever gets done, previous complaints ignored."
+    triggers: ["कुछ नहीं होता", "हर बार कहते", "पहले भी बताया", "सिर्फ बोलते"]
+    text: "आपका ग़ुस्सा जायज़ है, और मैं यह नहीं मान रहा कि सब ठीक है। इसीलिए यह दर्ज हो रहा है — दर्ज हो गया तो सूची में रहता है।"
+    tags: [tone]
+
+  - id: water_tanker
+    intent: "Voter asks about water tanker supply, frequency, or a tanker not arriving."
+    triggers: ["टैंकर", "पानी नहीं आता", "पानी नहीं"]
+    text: "पानी की दिक्कत मैं दर्ज कर रहा हूँ। आपका इलाक़ा और वार्ड कार्यालय को बताया जाएगा, और यह शिकायत जलापूर्ति विभाग तक जाएगी।"
+    tags: [water]
+
+  - id: water_pipeline
+    intent: "Voter asks about a new pipeline, leaking pipeline, or dirty water."
+    triggers: ["पाइपलाइन", "नल", "गंदा पानी", "लीकेज"]
+    text: "नल और पाइपलाइन की शिकायत दर्ज कर ली। पानी की गुणवत्ता या लीकेज की शिकायत हो तो वह अलग दर्ज होती है।"
+    tags: [water]
+
+  - id: roads_bad
+    intent: "Voter complains about potholes, broken road, unpaved road, or road work."
+    triggers: ["गड्ढे", "सड़क खराब", "सड़क नहीं", "डामर"]
+    text: "सड़क की शिकायत दर्ज कर रहा हूँ। कौन सी सड़क या वार्ड है यह दर्ज होते ही सूची निर्माण विभाग तक जाती है।"
+    tags: [roads]
+
+  - id: streetlight
+    intent: "Voter complains about streetlights not working or absent."
+    triggers: ["स्ट्रीट लाइट", "लाइट नहीं जलती", "अँधेरा"]
+    text: "स्ट्रीट लाइट की शिकायत दर्ज कर ली। अँधेरे से सुरक्षा का सवाल हो तो उसे अलग दर्ज करता हूँ।"
+    tags: [lights]
+
+  - id: drainage_garbage
+    intent: "Voter complains about drainage, sewage, garbage collection, or cleanliness."
+    triggers: ["नाली", "ड्रेनेज", "कचरा", "सफाई", "बदबू"]
+    text: "नाली और कचरे की शिकायत दर्ज कर रहा हूँ। यह शिकायत नगर निगम के संबंधित विभाग तक सूची के साथ जाती है।"
+    tags: [sanitation]
+
+  - id: electricity
+    intent: "Voter complains about power cuts, transformer, or electricity bills."
+    triggers: ["बिजली", "लाइट जाती", "ट्रांसफॉर्मर", "कटौती", "बिल"]
+    text: "बिजली की शिकायत दर्ज कर ली। विभाग को भेजने के लिए आपका इलाक़ा दर्ज कर रहा हूँ।"
+    tags: [power]
+
+  - id: ration_card
+    intent: "Voter has a problem with ration card, ration shop, or grain not received."
+    triggers: ["राशन", "अनाज", "कार्ड", "दुकानदार"]
+    text: "राशन की दिक्कत दर्ज कर रहा हूँ। कार्ड का मामला है या दुकान से अनाज नहीं मिलता — दोनों अलग दर्ज होते हैं, इसलिए ठीक-ठीक बताइए।"
+    tags: [scheme, ration]
+
+  - id: pension
+    intent: "Voter has a problem with old-age, widow, or disability pension."
+    triggers: ["पेंशन", "वृद्धावस्था", "विधवा", "दिव्यांग"]
+    text: "पेंशन की दिक्कत दर्ज कर ली। आवेदन किया है पर पैसे नहीं आते, या आवेदन ही नहीं हुआ — यह दर्ज कर रहा हूँ।"
+    tags: [scheme, pension]
+
+  - id: ladki_bahin
+    intent: "Voter asks about the Ladki Bahin scheme — instalment not received, form, eligibility."
+    triggers: ["लाडकी बहीण", "किस्त", "बहन योजना"]
+    text: "लाडकी बहीण योजना की दिक्कत दर्ज कर रहा हूँ। आवेदन का मामला है या किस्त नहीं आती, यह कार्यालय में दर्ज होगा।"
+    tags: [scheme, ladki_bahin]
+
+  - id: housing_gharkul
+    intent: "Voter asks about Gharkul / PMAY / housing scheme."
+    triggers: ["घरकुल", "आवास", "घर मंजूर", "पीएम आवास"]
+    text: "आवास योजना की दिक्कत दर्ज कर ली। सूची में नाम है या नहीं, और आवेदन कहाँ अटका है — कार्यालय यह देखेगा।"
+    tags: [scheme, housing]
+
+  - id: farm_issue
+    intent: "Voter raises crop loss, crop insurance, farm loan waiver, or MSP."
+    triggers: ["फसल", "खेती", "कर्जमाफी", "बीमा", "नुकसान", "समर्थन मूल्य"]
+    text: "खेती की दिक्कत दर्ज कर रहा हूँ। मुआवज़ा, बीमा या कर्ज़ का मामला हो तो वह कृषि विभाग तक सूची के साथ भेजा जाता है।"
+    tags: [scheme, farm]
+
+  - id: hospital_health
+    intent: "Voter raises hospital, clinic, doctor, ambulance, or medicine availability."
+    triggers: ["अस्पताल", "डॉक्टर", "दवा", "एम्बुलेंस"]
+    text: "स्वास्थ्य सेवा की शिकायत दर्ज कर ली। तुरंत चिकित्सा मदद चाहिए तो कृपया कार्यालय को सीधे फ़ोन करें — [कार्यालय नंबर]।"
+    tags: [health]
+
+  - id: school_education
+    intent: "Voter raises school, teacher, admission, or scholarship issues."
+    triggers: ["स्कूल", "शिक्षक", "दाखिला", "छात्रवृत्ति", "कॉलेज"]
+    text: "स्कूल की दिक्कत दर्ज कर रहा हूँ। कौन सा स्कूल और ठीक-ठीक क्या समस्या है, यह दर्ज होते ही शिक्षा विभाग तक जाता है।"
+    tags: [education]
+
+  - id: employment
+    intent: "Voter asks about jobs, unemployment, or employment schemes."
+    triggers: ["नौकरी", "रोज़गार", "काम नहीं", "बेरोज़गार"]
+    text: "रोज़गार का सवाल दर्ज कर रहा हूँ। कार्यालय में रोज़गार मेले और प्रशिक्षण की जानकारी रखी जाती है — [कार्यालय नंबर] पर पूछ सकते हैं।"
+    tags: [employment]
+
+  - id: want_to_meet
+    intent: "Voter asks to meet the MLA in person or asks when he will visit the area."
+    triggers: ["मिलना", "कब आएंगे", "आएंगे क्या", "प्रत्यक्ष"]
+    text: "मिलने के लिए कार्यालय से संपर्क कीजिए — [कार्यालय नंबर]। आपकी बात पहले ही दर्ज हो चुकी है, इसलिए मुलाक़ात में विषय पता होगा।"
+    tags: [meeting]
+
+  - id: personal_financial_help
+    intent: "Voter asks for money, a personal favour, a job placement, or direct financial help."
+    triggers: ["पैसे", "मदद कीजिए", "नौकरी लगवा", "आर्थिक"]
+    text: "ऐसी व्यक्तिगत बातें फ़ोन पर तय नहीं हो सकतीं। कृपया कार्यालय से संपर्क कीजिए — [कार्यालय नंबर] — वहाँ नियम के अनुसार देखा जाएगा।"
+    tags: [sensitive, no_promise]
+
+  - id: complaint_about_official
+    intent: "Voter complains about a specific government official, bribe, or corruption."
+    triggers: ["रिश्वत", "पैसे मांगता", "अधिकारी", "भ्रष्टाचार"]
+    text: "यह गंभीर शिकायत है, इसे अलग दर्ज कर रहा हूँ। कृपया कार्यालय में लिखित शिकायत दीजिए — [कार्यालय नंबर]।"
+    tags: [sensitive]
+
+  - id: repeat_that
+    intent: "Voter asks the agent to repeat, speak slower, or says they did not understand."
+    triggers: ["फिर से", "दोबारा", "समझ नहीं आया", "धीरे"]
+    text: "ज़रूर, फिर से बताता हूँ।"
+    tags: [control]
+
+  - id: call_me_later
+    intent: "Voter says they are busy and asks to be called at another time."
+    triggers: ["बाद में", "व्यस्त", "अभी नहीं", "कल"]
+    text: "ठीक है, अभी समय नहीं लेता। ज़रूरत लगे तो कार्यालय को फ़ोन कीजिए — [कार्यालय नंबर]। नमस्ते।"
+    tags: [control, ends_call]
+
+  - id: wrong_area
+    intent: "Voter says they do not live in this constituency or the number is wrong."
+    triggers: ["यहाँ नहीं रहता", "ग़लत नंबर", "दूसरे इलाक़े", "बाहर"]
+    text: "माफ़ कीजिए, ग़लती हो गई। मैं आपका नंबर सूची से हटा देता हूँ। समय देने के लिए धन्यवाद।"
+    tags: [control, ends_call, optout]
+
+  - id: angry_abusive
+    intent: "Voter is angry, shouting, or abusive."
+    triggers: []
+    text: "आपकी बात मैं दर्ज कर रहा हूँ। समय देने के लिए धन्यवाद। नमस्ते।"
+    tags: [tone, ends_call]
+
+fallback:
+  id: no_matched_answer
+  text: "यह मैं दर्ज कर रहा हूँ और अपने कार्यालय भेजता हूँ। विस्तार से बात करनी हो तो कार्यालय से संपर्क कीजिए — [कार्यालय नंबर]।"

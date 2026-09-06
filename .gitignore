@@ -7,3 +7,7 @@ __pycache__/
 .venv/
 *.pyc
 .worktrees/
+out/
+.venv/
+.pytest_cache/
+*.egg-info/

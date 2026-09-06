@@ -1,0 +1,150 @@
+# Call script — Marathi (production language)
+#
+# Source of truth for turn text: docs/03_CALL_SCRIPT.md.
+# Turns marked kind: fixed are pre-rendered once per voice and played from cache.
+# NOTHING in this file may be paraphrased at runtime. The SpeechGuard enforces that.
+#
+# REVIEW STATUS: draft. A native Marathi speaker from Chhatrapati Sambhajinagar must
+# edit the register before Stage 2. The disclosure sentence in OPEN must not be
+# shortened or reworded — see docs/02_COMPLIANCE.md §1.1.
+
+lang: mr-IN
+version: 0
+review:
+  status: draft
+  reviewed_by: null
+  reviewed_at: null
+
+placeholders:
+  speaker_name: "[नाव]"
+  constituency: "[मतदारसंघ]"
+
+turns:
+  OPEN:
+    kind: fixed
+    disclosure: true
+    text: "नमस्कार, मी [नाव] बोलतोय, [मतदारसंघ]चा आमदार. ही माझ्या आवाजाची AI प्रत आहे — हा कॉल माझ्या परवानगीने एका संगणक प्रणालीद्वारे केला जात आहे. तुमचं म्हणणं माझ्या कार्यालयापर्यंत नीट पोहोचावं म्हणून हा कॉल रेकॉर्ड होत आहे. बोलायचं नसेल तर फक्त 'नाही' म्हणा, कॉल लगेच बंद होईल. दोन मिनिटं देऊ शकाल का?"
+
+  Q1:
+    kind: fixed
+    field: water
+    short: "पाण्याचा पुरवठा कसा आहे"
+    text: "तुमच्या भागात पाण्याचा पुरवठा कसा आहे — रोज येतं, की अडचण होते?"
+
+  Q2:
+    kind: fixed
+    field: roads
+    short: "रस्ते आणि पथदिवे कसे आहेत"
+    text: "तुमच्या गावातल्या किंवा वॉर्डातल्या रस्त्यांची आणि पथदिव्यांची अवस्था कशी आहे?"
+
+  Q3:
+    kind: fixed
+    field: scheme_issue
+    short: "सरकारी योजनेत काही अडचण आली का"
+    text: "तुम्हाला किंवा तुमच्या कुटुंबाला कोणत्याही सरकारी योजनेचा लाभ मिळण्यात अडचण आली आहे का — रेशन, पेन्शन, लाडकी बहीण योजना, किंवा घरकुल?"
+
+  Q4:
+    kind: fixed
+    field: open_grievance_text
+    short: "आणखी काही सांगायचं आहे का"
+    text: "आणखी काही अडचण जी तुम्ही मला थेट सांगू इच्छिता?"
+
+  CLOSE:
+    kind: fixed
+    text: "धन्यवाद. तुमचं म्हणणं माझ्या कार्यालयात नोंदवलं गेलं आहे. पुढे असे कॉल नको असतील तर सांगा, आम्ही तुमचा नंबर काढून टाकू. नमस्कार."
+
+  # CLOSE_SHORT is referenced by the state machine in docs/03_CALL_SCRIPT.md but no
+  # text was specified there. DRAFTED HERE — needs the same native review as the rest.
+  CLOSE_SHORT:
+    kind: fixed
+    drafted_here: true
+    text: "ठीक आहे, तुम्ही कदाचित व्यस्त असाल. वेळ दिल्याबद्दल धन्यवाद. नमस्कार."
+
+  OPTOUT:
+    kind: fixed
+    text: "ठीक आहे, तुमचा नंबर काढून टाकतो. वेळ दिल्याबद्दल धन्यवाद. नमस्कार."
+
+acknowledgements:
+  kind: fixed
+  variants:
+    - "समजलं."
+    - "नोंद केली."
+    - "हे महत्त्वाचं आहे, धन्यवाद."
+
+# The only turn text built at runtime. Template is fixed; the {short} slot is filled
+# ONLY from turns.*.short above, never from model output.
+clarification:
+  kind: templated
+  template: "माफ करा, नीट ऐकू आलं नाही — {short}?"
+
+# Opt-out detection.
+#
+# docs/02_COMPLIANCE.md §1.3 says opt-out is "नाही/नहीं/no/stop". Taken literally that
+# is a substring match, and a substring match on "नाही" ends the call on
+# "पाणी रोज येत नाही" — a voter answering the water question. Marathi and Hindi negate
+# by appending नाही/नहीं to the verb, so the most common *answer* shape and the
+# opt-out keyword are the same token.
+#
+# So: `phrases` match anywhere (they are unambiguous), `standalone` match only when
+# the utterance is essentially nothing but that word. See script.py:is_optout.
+#
+# The bias is deliberate. A missed opt-out is recoverable — the voter says it again,
+# more firmly, and the answer bank's `wrong_area` / `call_me_later` entries also end
+# the call. A false opt-out is not recoverable: the call is gone and the grievance
+# with it.
+optout:
+  phrases:
+    - "नको मला"
+    - "मला नको"
+    - "बंद करा"
+    - "फोन ठेवा"
+    - "कॉल करू नका"
+    - "फोन करू नका"
+    - "पुन्हा फोन नको"
+    - "नंबर काढून टाका"
+    - "बोलायचं नाही"
+    - "बोलायचे नाही"
+    - "इंटरेस्ट नाही"
+    - "वेळ नाही"
+    - "not interested"
+    - "stop calling"
+    - "do not call"
+    - "dont call"
+  standalone:
+    - "नाही"
+    - "नको"
+    - "नाय"
+    - "no"
+    - "stop"
+  fillers:
+    - "मला"
+    - "अहो"
+    - "बाबा"
+    - "please"
+    - "प्लीज"
+
+affirm:
+  phrases:
+    - "हो बोला"
+    - "ठीक आहे"
+    - "चालेल"
+    - "विचारा"
+    - "सांगा"
+  standalone:
+    - "हो"
+    - "हा"
+    - "होय"
+    - "बोला"
+    - "yes"
+    - "ok"
+  fillers:
+    - "अहो"
+    - "बरं"
+
+# Interrogative markers. Used to decide whether a voter is ASKING something (consult
+# the answer bank) or ANSWERING the question we just asked (classify it). Without
+# this, "रस्ता खराब आहे आणि पथदिवे लागत नाहीत" fires the streetlight answer-bank
+# entry and the roads answer is never recorded.
+question:
+  words: ["काय", "कधी", "कुठे", "कुठून", "कोण", "कोणी", "कसं", "कसे", "कशी", "किती", "कशाला", "कशासाठी"]
+  final_particles: ["का", "ना"]
