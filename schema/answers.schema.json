@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConstituentCallAnswers",
+  "type": "object",
+  "required": ["call_id", "campaign_id", "voter_id", "lang", "disclosure_played_at", "outcome", "answers"],
+  "properties": {
+    "call_id": {"type": "string"},
+    "campaign_id": {"type": "string"},
+    "voter_id": {"type": "string"},
+    "politician_id": {"type": "string"},
+    "voice_consent_ref": {"type": "string"},
+    "lang": {"type": "string", "enum": ["mr-IN", "hi-IN"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "ended_at": {"type": "string", "format": "date-time"},
+    "duration_s": {"type": "number"},
+    "disclosure_played_at": {"type": "string", "format": "date-time"},
+    "dnd_checked_at": {"type": "string", "format": "date-time"},
+    "outcome": {"type": "string", "enum": ["completed", "opted_out", "no_answer", "voicemail", "hangup", "silence", "error"]},
+    "answers": {
+      "type": "object",
+      "properties": {
+        "water": {"type": "string", "enum": ["ok", "irregular", "none", "other", "unanswered"]},
+        "roads": {"type": "string", "enum": ["ok", "bad", "very_bad", "unanswered"]},
+        "lights": {"type": "string", "enum": ["ok", "bad", "unanswered"]},
+        "scheme_issue": {"type": "string", "enum": ["none", "ration", "pension", "ladki_bahin", "housing", "other", "unanswered"]},
+        "scheme_issue_text": {"type": "string"},
+        "open_grievance_text": {"type": "string"},
+        "open_grievance_category": {"type": "string"},
+        "open_grievance_priority": {"type": "string", "enum": ["low", "medium", "high"]}
+      }
+    },
+    "turns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["role", "text"],
+        "properties": {
+          "role": {"type": "string", "enum": ["agent", "voter"]},
+          "text": {"type": "string"},
+          "from_cache": {"type": "boolean"},
+          "latency_ms": {"type": "number"},
+          "stt_confidence": {"type": "number"}
+        }
+      }
+    },
+    "recording_url": {"type": "string"},
+    "cost_inr": {"type": "number"}
+  }
+}

@@ -1,0 +1,9 @@
+.env
+samples/*.wav
+samples/*.m4a
+cache/
+recordings/
+__pycache__/
+.venv/
+*.pyc
+.worktrees/
