@@ -40,6 +40,14 @@ system (Marathi/Hindi) for MLAs/MPs in Chhatrapati Sambhajinagar. Read in this o
 - **Windows console is cp1252.** Call `voiceai.console.setup()` at the top of every
   entry point or the first Devanagari `print()` raises.
 - **`uv pip install` needs `--native-tls`** on this machine (TLS interception).
+- **The opt-out ledger is keyed on phone alone**, never (campaign, phone), and has no
+  `remove()`. Both are deliberate — see `campaign/optout.py`.
+- **`NullDNDProvider` raises in production.** Marking numbers "checked" without
+  checking is a TRAI exposure that stays invisible until it is not.
+- **Never redial a `hangup` or `silence`.** They are signals, not failures; see
+  `campaign/dialer.py:RETRYABLE`.
+- **`campaign.simulate` must never leave a conversation `IN_PROGRESS`** — `to_record`
+  maps that to `error`, and a simulated error rate is a lie about the system.
 
 ## Engineering defaults
 - Python 3.11+, `uv`. Orchestrator: Pipecat (Stage 1) → Bolna self-hosted or Pipecat
@@ -56,10 +64,13 @@ system (Marathi/Hindi) for MLAs/MPs in Chhatrapati Sambhajinagar. Read in this o
 - Every session writes a record matching `schema/answers.schema.json` plus the audit
   fields (disclosure timestamp, consent ref, DND check, opt-out).
 - Log per-turn latency; report p50/p95.
+- Campaign layer (`campaign/`, `insights/`) is ours and off-the-shelf orchestrators do
+  not provide it. The constituency report is the commercial asset — see the README.
 - Useful skill packs: `github.com/bolna-ai/skills` (MIT), `github.com/sarvamai/skills`
   (Apache-2.0).
 
-## Status (2026-09-06)
-Core built and tested offline; 82 tests pass with no keys. Blocked on: a voice sample
-(3 min Hindi + 3 min Marathi + 30 s through a phone call) and one cloning-vendor key.
-Nothing confirmed with any client. Next: Stage 0 bake-off with real audio.
+## Status (2026-09-07)
+Voice core + campaign layer + constituency report built and tested offline; 149 tests
+pass with no keys. Blocked on: a voice sample (3 min Hindi + 3 min Marathi + 30 s
+through a phone call) and one cloning-vendor key. Nothing confirmed with any client.
+Next: Stage 0 bake-off with real audio.
