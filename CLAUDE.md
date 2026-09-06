@@ -44,10 +44,11 @@ system (Marathi/Hindi) for MLAs/MPs in Chhatrapati Sambhajinagar. Read in this o
 ## Engineering defaults
 - Python 3.11+, `uv`. Orchestrator: Pipecat (Stage 1) → Bolna self-hosted or Pipecat
   telephony (Stage 2). Do not write a custom orchestrator; implement `runner.Transport`.
-- **TTS/clone:** Smallest.ai is the only vendor with documented self-serve Marathi
-  cloning — start there. Sarvam cloning is enterprise-gated and its public TTS API takes
-  a fixed `speaker` enum. IndicF5 (MIT, Marathi, free) needs a GPU. NVIDIA Magpie has
-  no Marathi.
+- **TTS/clone:** Smallest.ai (documented self-serve Marathi cloning) and Gnani.ai
+  Vachana (Marathi zero-shot from <10s, Indian, on-prem available; access model
+  unverified) — bake off both. Sarvam cloning is enterprise-gated and its public TTS
+  API takes a fixed `speaker` enum. IndicF5 (MIT, Marathi, free) needs a GPU. NVIDIA
+  Magpie has no Marathi.
 - **STT:** Sarvam Saaras — best on 8 kHz Indic telephony. Try `mode="codemix"`.
 - Pre-render every fixed turn per voice; cache key `(voice_id, sha1(text), format)`.
   Live synthesis on a call path is a bug, and `CallRunner` refuses to start without a
@@ -60,5 +61,5 @@ system (Marathi/Hindi) for MLAs/MPs in Chhatrapati Sambhajinagar. Read in this o
 
 ## Status (2026-09-06)
 Core built and tested offline; 82 tests pass with no keys. Blocked on: a voice sample
-(3 min Hindi + 3 min Marathi + 30 s through a phone call) and a Smallest.ai key.
+(3 min Hindi + 3 min Marathi + 30 s through a phone call) and one cloning-vendor key.
 Nothing confirmed with any client. Next: Stage 0 bake-off with real audio.

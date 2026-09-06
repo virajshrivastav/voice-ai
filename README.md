@@ -45,6 +45,7 @@ Per-minute and per-sweep cost model.
 | [docs/04_BUILD_PLAN.md](docs/04_BUILD_PLAN.md) | Stage 0 bake-off → Stage 1 browser demo → Stage 2 real number → Stage 3 pilot |
 | [docs/05_SOURCES.md](docs/05_SOURCES.md) | Every source URL |
 | **[docs/06_CORRECTIONS.md](docs/06_CORRECTIONS.md)** | **What changed after re-verification and after building it — read this second** |
+| [docs/07_HANDOFF.md](docs/07_HANDOFF.md) | Handoff back to the spec's author: what was built, what was wrong, six open questions |
 | [CLAUDE.md](CLAUDE.md) | Rules for Claude Code working in this repo |
 
 ## What's built
@@ -87,8 +88,8 @@ is byte-identical to the audio that was approved.
 1. Cloned political calls are a commodity in India (50M+ in 2024); the product is the
    two-way conversation and the answer data.
 2. **Sarvam has no self-serve voice cloning** — its TTS API takes a fixed enum of
-   catalog voices. Stage 0 runs on Smallest.ai (self-serve Marathi cloning) and
-   optionally IndicF5 (MIT, free, Marathi, needs a GPU). See `06_CORRECTIONS.md`.
+   catalog voices. Stage 0 runs on **Smallest.ai** and **Gnani.ai Vachana** (both clone
+   Marathi), plus IndicF5 (MIT, free, needs a GPU). See `06_CORRECTIONS.md`.
 3. Sarvam is still the right **STT**: ~19% WER, tuned for 8 kHz telephony, `codemix`
    mode for Marathi/Hindi/English switching.
 4. **NVIDIA Magpie TTS has no Marathi.** Hindi only. The latency lever here is
@@ -107,8 +108,9 @@ Blocked on two things, both cheap:
 
 1. **A voice sample.** 3 min Hindi + 3 min Marathi, clean room, phone recorder, plus
    30 s recorded through an actual phone call. Everything in `stage0/` is waiting on it.
-2. **A Smallest.ai key.** It is the one vendor with documented self-serve Marathi
-   cloning, so it is the fastest route to a real answer on the only question that
-   matters: does the clone survive a phone line.
+2. **A TTS key.** Smallest.ai (documented self-serve Marathi cloning) or Gnani.ai
+   Vachana (Indian, IndiaAI-Mission, on-prem available, access model unverified).
+   Either gives a real answer to the only question that matters: does the clone
+   survive a phone line.
 
 Then `docs/04_BUILD_PLAN.md` → Stage 0.

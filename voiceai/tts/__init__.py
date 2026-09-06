@@ -27,13 +27,29 @@ PROVIDER_CAPABILITIES: dict[str, Capability] = {
         marathi="yes",
         cloning="self-serve",
         streaming=True,
-        note="Only vendor with documented self-serve Marathi cloning. Start here.",
+        note=(
+            "9 Marathi voices, instant clone from 5-15s, ~200ms TTFB in-region. The "
+            "cloning path is documented and self-serve, which is why Stage 0 starts here "
+            "rather than waiting on Sarvam or Gnani access."
+        ),
     ),
     "sarvam": Capability(
         marathi="yes",
         cloning="enterprise",
         streaming=True,
         note="Catalog voices via public API; cloning requires enterprise onboarding.",
+    ),
+    "gnani": Capability(
+        marathi="yes",
+        cloning="unconfirmed",
+        streaming=True,
+        note=(
+            "Vachana TTS (Feb 2026): zero-shot clone from <10s, 12 Indic languages incl. "
+            "Marathi, real-time streaming, on-prem for regulated sectors, tuned for "
+            "low bandwidth. Gnani is one of four IndiaAI Mission sovereign-model firms — "
+            "good positioning for a government buyer. Self-serve vs sales-gated is "
+            "unverified, and no price is published."
+        ),
     ),
     "cartesia": Capability(
         marathi="unconfirmed",
@@ -73,6 +89,14 @@ def get_tts(name: str, **kwargs) -> TTSProvider:
         from .sarvam import SarvamTTS
 
         return SarvamTTS(**kwargs)
+
+    if name == "gnani":
+        raise NotImplementedError(
+            "Gnani Vachana adapter not written: no public API reference was found and "
+            "the access model (self-serve vs sales) is unverified. Ask them for the "
+            "clone + synth endpoints, then implement TTSProvider — it is ~60 lines, the "
+            "same shape as smallest.py."
+        )
 
     if name == "cartesia":
         raise NotImplementedError(

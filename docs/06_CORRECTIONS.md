@@ -93,14 +93,31 @@ More to the point: the latency lever here is not the model. Pre-rendering makes 
 scripted turns play in single-digit milliseconds from disk, which no streaming TTS can
 beat, and that is most of the call.
 
-## N3 — Smallest.ai is the vendor Stage 0 can actually run on today
+## N3 — Two accessible Marathi cloning vendors, not one
 
-Self-serve instant cloning from 5–15 s, 9 Marathi voices, 200 ms TTFB in-region
-(500–800 ms from a distant client — RTT dominates), HTTP/SSE/WebSocket. Consent
-required by their ToS, which we satisfy anyway.
-
-Unverified: the documented `add_voice` endpoint sits on a **different host** and still
+**Smallest.ai Lightning v3.1.** Self-serve instant cloning from 5–15 s, 9 Marathi
+voices, 200 ms TTFB in-region (500–800 ms from a distant client — RTT dominates),
+HTTP/SSE/WebSocket. Consent required by their ToS, which we satisfy anyway.
+*Unverified:* the documented `add_voice` endpoint sits on a **different host** and still
 says `lightning-large`, not `v3.1`. `SMALLEST_CLONE_URL` overrides it.
+
+**Gnani.ai Vachana TTS** (launched Feb 2026) — and `00_CONTEXT.md §2` already names
+Gnani, but as a competitor running citizen surveys, not as a vendor we could buy from.
+Zero-shot cloning from **under 10 seconds**, 12 Indic languages **including Marathi**,
+real-time streaming, on-premises deployment offered for regulated sectors, and
+optimised for low-bandwidth. Gnani is **one of four companies selected under the
+IndiaAI Mission** to build sovereign foundational models — the same political
+positioning that makes Sarvam convenient for a government buyer, except Gnani will
+actually sell you a clone.
+
+On paper this is the better fit: Indian, sovereign-programme, on-prem available,
+low-bandwidth tuned, streaming. What is **not** verified: whether API access is
+self-serve or sales-gated, the price, the latency, and — worth noting — the press
+material states no consent or safety requirement for cloning, which is a gap in their
+posture rather than a licence for us. We impose consent regardless
+(`02_COMPLIANCE.md §1.2`).
+
+**Both belong in the Stage 0 bake-off.** Neither should be assumed until a key exists.
 
 ## N4 — Sarvam for ears, someone else for the mouth
 
