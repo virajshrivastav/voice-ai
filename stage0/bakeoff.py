@@ -38,8 +38,18 @@ def provider_kwargs(name: str, settings) -> dict:
     return {
         "mock": {},
         "smallest": {"api_key": settings.smallest_api_key},
+        "gnani": {"api_key": settings.gnani_api_key},
         "sarvam": {"api_key": settings.sarvam_api_key},
     }.get(name, {})
+
+
+def _clone(tts, sample: Path, lang: str, transcript: str | None) -> str:
+    """Vendors that care about the clip's language take `lang`; the base signature
+    does not, so pass it only where it is accepted."""
+    try:
+        return tts.clone(sample, display_name=f"bakeoff-{lang}", transcript=transcript, lang=lang)
+    except TypeError:
+        return tts.clone(sample, display_name=f"bakeoff-{lang}", transcript=transcript)
 
 
 def run_provider(
@@ -61,7 +71,7 @@ def run_provider(
         cloned = False
     elif sample:
         print(f"  cloning from {sample.name} …")
-        vid = tts.clone(sample, display_name=f"bakeoff-{lang}", transcript=transcript)
+        vid = _clone(tts, sample, lang, transcript)
         cloned = True
         print(f"  voice_id = {vid}")
     else:
@@ -106,7 +116,8 @@ def run_provider(
                 "tele": str(tele_path.relative_to(out_root)),
             }
         )
-        print(f"    {turn_id:<12} {result.ttfb_ms or 0:>7.0f} ms ttfb   ₹{result.cost_inr:.4f}")
+        cost = f"₹{result.cost_inr:.4f}" if (result.cost_inr or name != "gnani") else "₹ n/a (unpublished)"
+        print(f"    {turn_id:<12} {result.ttfb_ms or 0:>7.0f} ms ttfb   {cost}")
     return rows
 
 
@@ -114,7 +125,7 @@ def main() -> None:
     setup()
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--lang", default="mr-IN")
-    p.add_argument("--providers", default="mock", help="comma separated: mock,smallest,sarvam")
+    p.add_argument("--providers", default="mock", help="comma separated: mock,smallest,gnani,sarvam")
     p.add_argument("--sample", type=Path, help="reference audio to clone from")
     p.add_argument("--transcript", help="transcript of --sample (IndicF5-style models need it)")
     p.add_argument("--voice-id", help="skip cloning and use an existing voice id")

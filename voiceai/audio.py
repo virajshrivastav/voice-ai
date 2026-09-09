@@ -97,3 +97,27 @@ def write_wav(path: Path, pcm16: bytes, sample_rate: int, channels: int = 1) -> 
 def silence_wav(path: Path, seconds: float, sample_rate: int = 16000) -> Path:
     n = int(seconds * sample_rate)
     return write_wav(path, b"".join(struct.pack("<h", 0) for _ in range(n)), sample_rate)
+
+
+def prepare_reference_clip(
+    src: Path,
+    dst: Path,
+    *,
+    seconds: float,
+    sample_rate: int = 16000,
+    offset_s: float = 2.0,
+) -> Path:
+    """Cut a vendor-sized reference clip out of a long recording.
+
+    Cloning vendors want a *short* clean clip, not the 3-minute sample we ask the
+    speaker to record: Smallest caps the upload at 5 MB (a 3-minute 44.1 kHz WAV is
+    ~15 MB) and Gnani asks for 5-30 s. We keep the long recording for the blind-test
+    control and cut what each vendor wants from it here, skipping the first couple of
+    seconds because people clear their throat and adjust the phone.
+    """
+    ffmpeg = require_ffmpeg()
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    _run([ffmpeg, "-y", "-loglevel", "error", "-ss", f"{offset_s:.2f}", "-i", str(src),
+          "-t", f"{seconds:.2f}", "-ar", str(sample_rate), "-ac", "1",
+          "-c:a", "pcm_s16le", str(dst)])
+    return dst

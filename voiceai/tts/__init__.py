@@ -28,9 +28,9 @@ PROVIDER_CAPABILITIES: dict[str, Capability] = {
         cloning="self-serve",
         streaming=True,
         note=(
-            "9 Marathi voices, instant clone from 5-15s, ~200ms TTFB in-region. The "
-            "cloning path is documented and self-serve, which is why Stage 0 starts here "
-            "rather than waiting on Sarvam or Gnani access."
+            "9 Marathi voices, instant clone from 5-15s, ~200ms TTFB in-region, "
+            "self-serve. Prohibited Use Policy: no candidate impersonation, political "
+            "advertising needs prior written approval — ask before a pilot."
         ),
     ),
     "sarvam": Capability(
@@ -41,14 +41,14 @@ PROVIDER_CAPABILITIES: dict[str, Capability] = {
     ),
     "gnani": Capability(
         marathi="yes",
-        cloning="unconfirmed",
+        cloning="self-serve",
         streaming=True,
         note=(
-            "Vachana TTS (Feb 2026): zero-shot clone from <10s, 12 Indic languages incl. "
-            "Marathi, real-time streaming, on-prem for regulated sectors, tuned for "
-            "low bandwidth. Gnani is one of four IndiaAI Mission sovereign-model firms — "
-            "good positioning for a government buyer. Self-serve vs sales-gated is "
-            "unverified, and no price is published."
+            "Public API (docs.gnani.ai, self-serve keys at app.gnani.ai/voice, verified "
+            "2026-09-09): zero-shot clone from 5-30 s -> embedding, REST/SSE/WebSocket "
+            "synthesis, native 8 kHz mu-law, official Pipecat + LiveKit plugins. IndiaAI "
+            "Mission sovereign-model firm. Price unpublished; Marathi clone quality "
+            "unverified until the bake-off."
         ),
     ),
     "cartesia": Capability(
@@ -91,12 +91,9 @@ def get_tts(name: str, **kwargs) -> TTSProvider:
         return SarvamTTS(**kwargs)
 
     if name == "gnani":
-        raise NotImplementedError(
-            "Gnani Vachana adapter not written: no public API reference was found and "
-            "the access model (self-serve vs sales) is unverified. Ask them for the "
-            "clone + synth endpoints, then implement TTSProvider — it is ~60 lines, the "
-            "same shape as smallest.py."
-        )
+        from .gnani import GnaniTTS
+
+        return GnaniTTS(**kwargs)
 
     if name == "cartesia":
         raise NotImplementedError(

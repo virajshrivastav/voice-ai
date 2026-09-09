@@ -153,7 +153,7 @@ class CampaignEstimate:
                 f"  Unanswered attempts     ₹{self.failed_attempt_cost:,.0f}",
                 f"  TOTAL COST              ₹{self.total_cost:,.0f}",
                 "",
-                f"  Billed at ₹{self.sell_price_per_min:.0f}/min      ₹{self.revenue_at_sell_price:,.0f}",
+                f"  Billed at ₹{self.sell_price_per_min:g}/min      ₹{self.revenue_at_sell_price:,.0f}",
                 f"  Margin                  ₹{self.margin:,.0f}",
             ]
         )

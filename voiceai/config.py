@@ -58,6 +58,7 @@ class Settings:
 
     sarvam_api_key: str = field(default_factory=lambda: _env("SARVAM_API_KEY"))
     smallest_api_key: str = field(default_factory=lambda: _env("SMALLEST_API_KEY"))
+    gnani_api_key: str = field(default_factory=lambda: _env("GNANI_API_KEY"))
     cartesia_api_key: str = field(default_factory=lambda: _env("CARTESIA_API_KEY"))
 
     # "demo" relaxes the answer-bank approval gate so the pipeline can be exercised
